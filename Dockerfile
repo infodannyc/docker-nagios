@@ -4,7 +4,7 @@
 
 # https://www.docker.com/blog/docker-arm-virtual-meetup-multi-arch-with-buildx/
 
-FROM alpine:3.12 as builder-base
+FROM alpine:3.16 as builder-base
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -43,7 +43,7 @@ RUN addgroup -S ${NAGIOS_GROUP} && \
     : '#######################################' && \
     : '# Creating an associative array with the platforms and their respective gosu release DOES NOT WORK in /bin/sh' && \
     echo "Arguments TARGETPLATFORM: ${TARGETPLATFORM} and BUILDPLATFORM: ${BUILDPLATFORM}" && \
-    echo "$TARGETPLATFORM" | awk '{ gosuBinArr["linux/amd64"]="gosu-amd64"; gosuBinArr["linux/arm/v6"]="gosu-armel"; gosuBinArr["linux/arm/v7"]="gosu-armhf"; gosuBinArr["linux/arm64"]="gosu-arm64"; print gosuBinArr[$0];}' > mygosuver.txt && \
+    echo "$TARGETPLATFORM" | awk '{ gosuBinArr["linux/amd64"]="gosu-amd64"; gosuBinArr["linux/arm/v6"]="gosu-armel"; gosuBinArr["linux/arm/v7"]="gosu-armhf"; gosuBinArr["linux/arm64"]="gosu-arm64"; gosuBinArr["linux/arm64"]="gosu-arm64"; print gosuBinArr[$0];}' > mygosuver.txt && \
     gosuPlatform=$(cat mygosuver.txt) && \
     echo "Downloading ${gosuPlatform} for platform $TARGETPLATFORM" &&\
     curl -L -o gosu "https://github.com/tianon/gosu/releases/download/1.13/${gosuPlatform}"  && \
@@ -66,7 +66,7 @@ RUN apk update && \
     apk add --no-cache build-base automake libtool autoconf py-docutils gnutls  \
                         gnutls-dev g++ make alpine-sdk build-base gcc autoconf \
                         gettext-dev linux-headers openssl-dev net-snmp net-snmp-tools \
-                        libcrypto1.1 libpq musl libldap libssl1.1 libdbi freeradius-client mariadb-connector-c \
+                        libcrypto1.1 libpq gcompat libldap libssl1.1 libdbi freeradius-client mariadb-connector-c \
                         openssh-client bind-tools samba-client fping grep rpcbind \
                         lm-sensors net-snmp-tools \
                         file freeradius-client-dev libdbi-dev libpq linux-headers mariadb-dev \
