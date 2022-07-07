@@ -104,6 +104,20 @@ RUN    ls -l /tmp && cd /tmp && \
        echo -n "Replacing \"<sys\/poll.h>\" with \"<poll.h>\": " && \
        sed -i 's/<sys\/poll.h>/<poll.h>/g' ./include/config.h && \
        echo "OK" && \
+       echo -n "Replacing \"<sys\/time.h>\" with \"<compat\/time32.h>\": " && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./base/utils.c && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./configure && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./configure.ac && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./include/config.h.in && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/iobroker.c && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/nsutils.h && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/runcmd.c && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/squeue.c && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/squeue.h && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/test-nsutils.c && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/test-squeue.c && \
+        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/worker.h && \
+       echo "OK" && \
        echo -e "\n\n ===========================\n Compile Nagios Core\n ===========================\n" && \
        make all && \
        echo -e "\n\n ===========================\n  Install Nagios Core\n ===========================\n" && \
