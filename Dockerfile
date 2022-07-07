@@ -4,7 +4,7 @@
 
 # https://www.docker.com/blog/docker-arm-virtual-meetup-multi-arch-with-buildx/
 
-FROM alpine:3.12 as builder-base
+FROM alpine:3.16 as builder-base
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -29,8 +29,8 @@ RUN addgroup -S ${NAGIOS_GROUP} && \
     adduser  -S ${NAGIOS_USER} -G ${NAGIOS_CMDGROUP} && \
     apk update && \
     apk add --no-cache git curl unzip apache2 apache2-utils rsyslog \
-                        php7 php7-gd php7-cli runit parallel ssmtp \
-                        libltdl libintl openssl-dev php7-apache2 procps tzdata \
+                        php8 php8-gd php8-cli runit parallel ssmtp \
+                        libltdl libintl openssl-dev php8-apache2 procps tzdata \
                         libldap mariadb-connector-c freeradius-client-dev libpq libdbi \
                         lm-sensors perl net-snmp-perl perl-net-snmp perl-crypt-x509 \
                         perl-timedate perl-libwww perl-text-glob samba-client openssh openssl \
@@ -104,19 +104,23 @@ RUN    ls -l /tmp && cd /tmp && \
        echo -n "Replacing \"<sys\/poll.h>\" with \"<poll.h>\": " && \
        sed -i 's/<sys\/poll.h>/<poll.h>/g' ./include/config.h && \
        echo "OK" && \
+       git clone https://github.com/bminor/musl && \
+       cp -r musl/compat . && \
+       cp -r compat ./lib && \
+       rm -f -r musl && \
        echo -n "Replacing \"<sys\/time.h>\" with \"<compat\/time32.h>\": " && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./base/utils.c && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./configure && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./configure.ac && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./include/config.h.in && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/iobroker.c && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/nsutils.h && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/runcmd.c && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/squeue.c && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/squeue.h && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/test-nsutils.c && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/test-squeue.c && \
-        sed -i 's;sys/time.h;compat/time32.h;g' ./lib/worker.h && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./base/utils.c && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./configure && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./configure.ac && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./include/config.h.in && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./lib/iobroker.c && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./lib/nsutils.h && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./lib/runcmd.c && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./lib/squeue.c && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./lib/squeue.h && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./lib/test-nsutils.c && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./lib/test-squeue.c && \
+        sed -i 's;<sys/time.h>;"compat/time32/time32.h";g' ./lib/worker.h && \
        echo "OK" && \
        echo -e "\n\n ===========================\n Compile Nagios Core\n ===========================\n" && \
        make all && \
