@@ -3,6 +3,7 @@
 ### ================================== ###
 
 # https://www.docker.com/blog/docker-arm-virtual-meetup-multi-arch-with-buildx/
+# add python & pip
 
 FROM alpine:3.12 as builder-base
 
@@ -34,7 +35,7 @@ RUN addgroup -S ${NAGIOS_GROUP} && \
                         libldap mariadb-connector-c freeradius-client-dev libpq libdbi \
                         lm-sensors perl net-snmp-perl perl-net-snmp perl-crypt-x509 \
                         perl-timedate perl-libwww perl-text-glob samba-client openssh openssl \
-                        net-snmp-tools bind-tools gd gd-dev && \
+                        net-snmp-tools bind-tools gd gd-dev python3 py3-pip && \
                                                 \
     : '# For x86 the binary is : gosu-i386' && \
     : '# For x64 the binary is : gosu-amd64' && \
@@ -53,6 +54,8 @@ RUN addgroup -S ${NAGIOS_GROUP} && \
     chmod 755 /bin/gosu && \
     chmod +s /bin/gosu && \
     addgroup -S apache ${NAGIOS_CMDGROUP}
+    pip3 install -r requeriments.txt && \
+    rm -f requeriments.txt
    
     
 ### ================================== ###
